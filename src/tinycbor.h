@@ -39,7 +39,7 @@ public:
 
   inline void set_encoders(CborEncoder* encoders, size_t len) { mEncoders = encoders; mDepth = len; }
 
-  inline void init(uint8_t *buffer, size_t size, int flags=0) { mBuffer = buffer; cbor_encoder_init(&mEncoders[mNestLevel], buffer, size, flags); }
+  inline void init(uint8_t *buffer, size_t size, int flags=0) { mNestLevel = 0; mBuffer = buffer; cbor_encoder_init(&mEncoders[mNestLevel], buffer, size, flags); }
   inline size_t get_buffer_size() { return cbor_encoder_get_buffer_size(&mEncoders[mNestLevel], mBuffer); }
   inline size_t get_extra_bytes_needed() { return cbor_encoder_get_extra_bytes_needed(&mEncoders[mNestLevel]); }
 
@@ -106,7 +106,7 @@ public:
   bool is_in_map() { return (mNestLevel != 0 && cbor_value_is_map(&mValues[mNestLevel-1]) ); }
   bool is_in_array() { return (mNestLevel != 0 && cbor_value_is_array(&mValues[mNestLevel-1]) ); }
 
-  inline int init(const uint8_t *buffer, size_t size, uint32_t flags) { return _clr_err(cbor_parser_init(buffer, size, flags, &mParser, &mValues[mNestLevel])); }
+  inline int init(const uint8_t *buffer, size_t size, uint32_t flags) { mNestLevel = 0; return _clr_err(cbor_parser_init(buffer, size, flags, &mParser, &mValues[mNestLevel])); }
 
   inline bool at_end() { return _clr_err(cbor_value_at_end(&mValues[mNestLevel])); }
   inline bool at_end_of_data() { return (mNestLevel == 0) && at_end(); }
